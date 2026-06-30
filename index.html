@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Check-in</title>
+    <!-- เรียกใช้งาน Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- เรียกใช้งาน Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
+    <div class="container mt-5">
+        <!-- Header Section (อ้างอิงตามภาพตัวอย่าง) -->
+        <div class="mb-4">
+            <h2><i class="bi bi-calendar-check"></i> Activity Check-in</h2>
+            <p class="text-muted">ระบบบันทึกการเข้าร่วมกิจกรรมนักเรียน (Frontend Demo)</p>
+        </div>
+
+        <div class="row">
+            <!-- ส่วนฟอร์มบันทึกข้อมูล -->
+            <div class="col-12 col-lg-4 mb-4">
+                <div class="card border-0 shadow-sm p-4 h-100">
+                    <h4 class="fw-bold mb-3"><i class="bi bi-person-plus-fill me-2"></i>บันทึกกิจกรรม</h4>
+                    <!-- เพิ่ม id="activityForm" เพื่อให้ JavaScript เรียกใช้งานได้ -->
+                    <form id="activityForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">รหัสนักเรียน</label>
+                            <input type="text" class="form-control" id="studentId" placeholder="เช่น 66301234" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">ชื่อ - นามสกุล</label>
+                            <input type="text" class="form-control" id="studentName" placeholder="เช่น นายสมชาย สายลุย" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">ชื่อกิจกรรม</label>
+                            <select class="form-select" id="activityName" required>
+                                <option value="" selected disabled>-- เลือกกิจกรรม --</option>
+                                <option value="กิจกรรมปฐมนิเทศ">กิจกรรมปฐมนิเทศ</option>
+                                <option value="กิจกรรมวันไหว้ครู">กิจกรรมวันไหว้ครู</option>
+                                <option value="กิจกรรมจิตอาสา">กิจกรรมจิตอาสา</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold d-block">สถานะการเข้าร่วม</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="statusOptions" id="status1" value="เข้าร่วม" checked>
+                                <label class="form-check-label text-success fw-bold" for="status1">เข้าร่วม</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="statusOptions" id="status2" value="มาสาย">
+                                <label class="form-check-label text-warning fw-bold" for="status2">มาสาย</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="statusOptions" id="status3" value="ขาด">
+                                <label class="form-check-label text-danger fw-bold" for="status3">ขาด</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2">บันทึกข้อมูล</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ส่วนตารางแสดงข้อมูล -->
+            <div class="col-12 col-lg-8">
+                <div class="card border-0 shadow-sm p-4 h-100">
+                    <h4 class="fw-bold mb-3"><i class="bi bi-table me-2"></i>รายชื่อการเข้าร่วมกิจกรรม</h4>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="width: 20%;">รหัสนักเรียน</th>
+                                    <th style="width: 30%;">ชื่อ - นามสกุล</th>
+                                    <th style="width: 35%;">กิจกรรม</th>
+                                    <th style="width: 15%;" class="text-center">สถานะ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentTableBody">
+                                <!-- ข้อมูลที่ถูกบันทึกจะแสดงตรงนี้ -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JavaScript สำหรับจัดการ Form -->
+    <script>
+        document.getElementById('activityForm').addEventListener('submit', function(event) {
+            // ป้องกันไม่ให้หน้าเว็บรีเฟรชเมื่อกด submit
+            event.preventDefault(); 
+
+            // 1. ดึงข้อมูลจากฟอร์ม
+            const studentId = document.getElementById('studentId').value;
+            const studentName = document.getElementById('studentName').value;
+            const activityName = document.getElementById('activityName').value;
+            
+            // ดึงค่า Radio button ที่ถูกเลือก
+            const status = document.querySelector('input[name="statusOptions"]:checked').value;
+
+            // 2. กำหนดสีของ Badge ตามสถานะ
+            let badgeClass = '';
+            if (status === 'เข้าร่วม') {
+                badgeClass = 'bg-success';
+            } else if (status === 'มาสาย') {
+                badgeClass = 'bg-warning text-dark';
+            } else if (status === 'ขาด') {
+                badgeClass = 'bg-danger';
+            }
+
+            // 3. สร้างแถว <tr> ใหม่
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${studentId}</td>
+                <td>${studentName}</td>
+                <td>${activityName}</td>
+                <td class="text-center">
+                    <span class="badge ${badgeClass}">${status}</span>
+                </td>
+            `;
+
+            // 4. นำแถวที่สร้างไปต่อท้ายในตาราง tbody
+            document.getElementById('studentTableBody').appendChild(newRow);
+
+            // 5. ล้างค่าในฟอร์มเพื่อเตรียมรับข้อมูลคนถัดไป
+            this.reset();
+            // รีเซ็ตให้ Radio ปุ่มแรก (เข้าร่วม) ถูกเลือกเป็นค่าเริ่มต้น
+            document.getElementById('status1').checked = true; 
+        });
+    </script>
+</body>
+</html>
